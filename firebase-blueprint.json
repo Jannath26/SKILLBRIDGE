@@ -1,0 +1,162 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "System user with profile information and activity status.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "professionalTitle": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "role": { "type": "string", "enum": ["learner", "mentor"] },
+        "bio": { "type": "string" },
+        "skills": { "type": "array", "items": { "type": "string" } },
+        "specialties": { "type": "array", "items": { "type": "string" } },
+        "interests": { "type": "array", "items": { "type": "string" } },
+        "hourlyRate": { "type": "integer" },
+        "availability": { "type": "string" },
+        "githubUrl": { "type": "string" },
+        "twitterUrl": { "type": "string" },
+        "linkedinUrl": { "type": "string" },
+        "credits": { "type": "integer" },
+        "xp": { "type": "integer" },
+        "level": { "type": "integer" },
+        "streak": { "type": "integer" },
+        "lastCheckIn": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Conversation": {
+      "title": "Conversation",
+      "description": "A chat conversation between two users.",
+      "type": "object",
+      "properties": {
+        "participants": { "type": "array", "items": { "type": "string" } },
+        "lastMessage": {
+          "type": "object",
+          "properties": {
+            "text": { "type": "string" },
+            "senderId": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" }
+          }
+        },
+        "unreadCount": { "type": "object" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Message": {
+      "title": "Message",
+      "description": "A single message within a conversation.",
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "senderId": { "type": "string" },
+        "type": { "type": "string", "enum": ["text", "image", "file", "voice"] },
+        "status": { "type": "string", "enum": ["sent", "seen"] },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "metadata": { "type": "object" }
+      }
+    },
+    "Roadmap": {
+      "title": "Roadmap",
+      "description": "AI-generated learning path for a specific skill.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "skill": { "type": "string" },
+        "currentLevel": { "type": "string" },
+        "targetLevel": { "type": "string" },
+        "title": { "type": "string" },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": { "type": "string" },
+              "description": { "type": "string" },
+              "searchQuery": { "type": "string" },
+              "milestones": { "type": "array", "items": { "type": "string" } },
+              "completedMilestones": { "type": "array", "items": { "type": "string" } },
+              "resources": { "type": "array" }
+            }
+          }
+        },
+        "currentStepIndex": { "type": "integer" },
+        "progress": { "type": "integer" },
+        "status": { "type": "string", "enum": ["active", "completed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Mentorship": {
+      "title": "Mentorship",
+      "description": "Relationship between a mentor and a learner.",
+      "type": "object",
+      "properties": {
+        "mentorId": { "type": "string" },
+        "learnerId": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "accepted", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "Realtime notification for users.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "type": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "read": { "type": "boolean" },
+        "data": { "type": "object" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Review given to a mentor by a learner.",
+      "type": "object",
+      "properties": {
+        "mentorId": { "type": "string" },
+        "learnerId": { "type": "string" },
+        "rating": { "type": "integer" },
+        "comment": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "firestore": {
+    "users": {
+      "schema": "User",
+      "description": "Primary collection for user profiles."
+    },
+    "conversations": {
+      "schema": "Conversation",
+      "description": "A conversation between two users."
+    },
+    "conversations/{conversationId}/messages": {
+      "schema": "Message",
+      "description": "Messages within a specific conversation."
+    },
+    "roadmaps": {
+      "schema": "Roadmap",
+      "description": "Learning paths generated by AI."
+    },
+    "mentorships": {
+      "schema": "Mentorship",
+      "description": "Mentorship requests and agreements."
+    },
+    "notifications": {
+      "schema": "Notification",
+      "description": "User notifications."
+    },
+    "reviews": {
+      "schema": "Review",
+      "description": "Mentor reviews."
+    }
+  }
+}

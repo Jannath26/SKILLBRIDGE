@@ -1,0 +1,13 @@
+{
+  "name": "SkillBridge",
+  "description": "An AI-powered Skill Exchange & Mentorship Platform with realtime chat, roadmap generation, and credit systems.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "AI Roadmap Generation",
+    "Realtime Mentorship Chat",
+    "Dynamic Learning Progress"
+  ]
+}

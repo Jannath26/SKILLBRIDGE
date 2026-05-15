@@ -1,0 +1,97 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    // Connection test rule (publicly readable for health check)
+    match /test/connection {
+      allow read: if true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+    function incoming() {
+      return request.resource.data;
+    }
+    function existing() {
+      return resource.data;
+    }
+
+    // --- User Validation ---
+    function isValidUser(data) {
+      return (data.get('uid', request.auth.uid) == request.auth.uid) &&
+             (data.get('role', 'learner') in ['learner', 'mentor']);
+    }
+
+    match /users/{userId} {
+      allow read: if isSignedIn(); 
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isOwner(userId) && (
+        // Action: Update Profile
+        (incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'photoURL', 'bio', 'skills', 'interests', 'specialties', 'hourlyRate', 'availability', 'professionalTitle', 'role', 'githubUrl', 'twitterUrl', 'linkedinUrl', 'updatedAt'])) ||
+        // Action: Update Stats
+        (incoming().diff(existing()).affectedKeys().hasOnly(['credits', 'xp', 'level', 'streak', 'lastCheckIn', 'updatedAt']))
+      );
+    }
+
+    // --- Conversation & Messages ---
+    function isParticipant(participants) {
+      return isSignedIn() && (participants != null) && (request.auth.uid in participants);
+    }
+
+    match /conversations/{convId} {
+      allow read: if isSignedIn() && (request.auth.uid in resource.data.participants);
+      allow create: if isSignedIn() && (request.auth.uid in incoming().participants);
+      allow update: if isSignedIn() && (request.auth.uid in resource.data.participants);
+
+      match /messages/{msgId} {
+        allow read: if isSignedIn() && isParticipant(get(/databases/$(database)/documents/conversations/$(convId)).data.participants);
+        allow create: if isSignedIn() && isParticipant(get(/databases/$(database)/documents/conversations/$(convId)).data.participants) &&
+                       incoming().senderId == request.auth.uid;
+      }
+    }
+
+    // --- Roadmaps ---
+    match /roadmaps/{roadmapId} {
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || true); // Public roadmaps allowed
+      allow create: if isSignedIn() && isOwner(incoming().userId);
+      allow update: if isSignedIn() && isOwner(resource.data.userId) && 
+                    incoming().diff(existing()).affectedKeys().hasOnly(['steps', 'status', 'progress', 'currentStepIndex', 'updatedAt']);
+    }
+
+    // --- Mentorships ---
+    match /mentorships/{mId} {
+      allow read: if isSignedIn() && (request.auth.uid == resource.data.mentorId || request.auth.uid == resource.data.learnerId);
+      allow create: if isSignedIn() && request.auth.uid == incoming().learnerId;
+      allow update: if isSignedIn() && (request.auth.uid == resource.data.mentorId || request.auth.uid == resource.data.learnerId) &&
+                    incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt']);
+    }
+
+    // --- Notifications ---
+    match /notifications/{nId} {
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn(); 
+      allow update: if isSignedIn() && resource.data.userId == request.auth.uid && 
+                    incoming().diff(existing()).affectedKeys().hasOnly(['read', 'updatedAt']);
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    // --- Reviews ---
+    match /reviews/{rId} {
+      allow read: if true; // Reviews are public
+      allow create: if isSignedIn() && request.auth.uid == incoming().learnerId;
+    }
+  }
+}
