@@ -95,7 +95,7 @@ SkillBridge aims to bridge the gap between learners and mentors by creating a co
 
 ## 👥 Team
 
-Built for hackathon submission by Team SkillBridge.
+Built for hackathon submission by Team ByteStorm
 
 ---
 
