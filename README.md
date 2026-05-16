@@ -74,7 +74,7 @@ Each user has a customizable profile containing:
 - Lucide React Icons
 
 ### Deployment
-- Vercel
+- Vercel / Netlify
 - Google Cloud Run
 
 ---
