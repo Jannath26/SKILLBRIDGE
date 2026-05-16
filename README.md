@@ -1,4 +1,4 @@
-# SkillBridge 🌉
+# SkillBridge
 
 SkillBridge is a mentorship and skill exchange platform that connects learners with mentors to make learning more collaborative, guided, and accessible.
 
