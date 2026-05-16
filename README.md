@@ -1,7 +1,7 @@
 # SkillBridge
 
-SkillBridge is a mentorship and skill exchange platform that connects learners with mentors to make learning more collaborative, guided, and accessible.
-Exchange Skills, Not Money :)
+SkillBridge is a mentorship and skill exchange platform that connects learners with mentors to make learning more collaborative, guided, and accessible.<br>
+Exchange Skills, Not Money :)<br>
 Based on a credit system of teaching and learning.
 
 ## 🚀 Features
