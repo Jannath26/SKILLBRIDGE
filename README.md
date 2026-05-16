@@ -101,4 +101,4 @@ Built for hackathon submission by Team SkillBridge.
 
 ## 🔗 Live Demo
 
-http://skillbridge-wheat-six.vercel.app/
+<a href="https://skillbridge-wheat-six.vercel.app/">SkillBridge</a>
